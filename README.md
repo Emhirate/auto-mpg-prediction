@@ -1,167 +1,112 @@
-# Auto MPG Prediction: Machine Learning Regression
+# Auto MPG Prediction
+
+A machine learning regression project that predicts the fuel efficiency of vehicles using their technical specifications. The project explores data analysis, preprocessing, feature engineering, model development, cross-validation, and hyperparameter optimisation.
 
 ## Project Overview
 
-This project develops a machine learning regression system to predict the fuel efficiency of automobiles, measured in miles per gallon (MPG), using vehicle characteristics such as cylinders, displacement, horsepower, weight, acceleration, model year, and origin.
+Fuel efficiency is an important consideration in vehicle analysis. This project uses the Auto MPG dataset to investigate how vehicle characteristics relate to fuel consumption and develops regression models to predict miles per gallon (MPG).
 
-The project explores and compares multiple regression algorithms, applies a structured preprocessing workflow, engineers additional features, and evaluates model performance using cross-validation.
-
-The primary objective is to identify a model that generalizes effectively to unseen data while demonstrating a reproducible and methodologically sound machine learning workflow.
-
-## Problem Statement
-
-Fuel efficiency is an important consideration in vehicle design, ownership, and environmental impact.
-
-The objective of this project is to determine how vehicle characteristics influence fuel consumption and develop a regression model capable of predicting a vehicle's MPG from its specifications.
-
-This is a supervised learning problem because the dataset contains known MPG values that serve as the target variable during model training.
+The primary objective is to build and evaluate machine learning models, identify the most effective approach, and examine whether hyperparameter optimisation improves predictive performance.
 
 ## Dataset
 
-The project uses the **Auto MPG dataset**, originally made available through the UCI Machine Learning Repository.
+The project uses the **Auto MPG dataset** from the UCI Machine Learning Repository.
 
-- **Dataset:** Auto MPG
-- **Source:** [UCI Machine Learning Repository – Auto MPG](https://archive.ics.uci.edu/dataset/9/auto+mpg)
-- **Task:** Regression
+- **Observations:** 398 vehicles
 - **Target variable:** MPG
-- **Observations:** 398 automobiles
+- **Features:** Cylinders, Displacement, Horsepower, Weight, Acceleration, Model Year, and Origin.
+- **Missing values:** 6 missing observations in Horsepower.
 
-### Dataset Features
-
-| Feature      | Description                                           |
-| ------------ | ----------------------------------------------------- |
-| MPG          | Fuel efficiency in miles per gallon (target variable) |
-| Cylinders    | Number of engine cylinders                            |
-| Displacement | Engine displacement                                   |
-| Horsepower   | Engine horsepower                                     |
-| Weight       | Vehicle weight                                        |
-| Acceleration | Time taken to accelerate                              |
-| Model Year   | Year of vehicle manufacture                           |
-| Origin       | Geographic origin of the vehicle                      |
-| Car Name     | Vehicle identification/name                           |
-
-The `Car Name` field is not used as a predictive feature in the modelling workflow.
-
-The dataset contains missing values in the `Horsepower` feature, which are addressed through the preprocessing pipeline.
+The target variable, MPG, represents a vehicle's fuel efficiency in miles per gallon.
 
 ## Project Workflow
 
-The project follows a structured machine learning workflow.
+### 1. Data Exploration and Analysis
 
-### 1. Data Exploration and Understanding
+The dataset was examined to understand its structure, identify missing values, investigate feature distributions, and explore relationships between vehicle characteristics and fuel efficiency.
 
-Initial exploratory data analysis (EDA) is performed to understand the dataset's structure, identify missing values, examine feature distributions, and investigate relationships between vehicle characteristics and fuel efficiency.
-
-### 2. Data Preparation
-
-The dataset is prepared for modelling through:
-
-- Identification and handling of missing values.
-- Separation of predictors and target variable.
-- Encoding of categorical variables.
-- Separation of training and testing datasets.
-
-The test dataset is kept separate from model development to support an unbiased final evaluation.
-
-### 3. Feature Engineering
-
-A custom transformer is implemented to generate additional predictive features:
-
-- `acceleration_on_cyl`: Acceleration divided by the number of cylinders.
-- `acceleration_on_power`: Acceleration divided by horsepower.
-
-These engineered features are incorporated into the numerical preprocessing pipeline.
-
-### 4. Data Preprocessing
-
-A Scikit-learn preprocessing pipeline is constructed to ensure that transformations are applied consistently.
+### 2. Data Preprocessing
 
 The preprocessing workflow includes:
 
-- **Missing-value imputation:** Median imputation for numerical features.
-- **Feature engineering:** Generation of additional numerical attributes.
-- **Feature scaling:** Standardization using `StandardScaler`.
-- **Categorical encoding:** One-hot encoding of the `Origin` feature.
+- Handling missing numerical values using median imputation.
+- Encoding categorical vehicle-origin information.
+- Scaling numerical features using StandardScaler.
+- Using scikit-learn pipelines to organise preprocessing and model training.
 
-The preprocessing transformations are integrated with each estimator in a complete Scikit-learn pipeline.
+### 3. Feature Engineering
 
-This ensures that preprocessing is fitted independently within each cross-validation training fold, preventing data leakage.
+Two additional features were developed:
 
-### 5. Model Development
+- `acceleration_on_cyl`
+- `acceleration_on_power`
 
-Four regression algorithms are evaluated:
+These features explore relationships between acceleration, engine cylinders, and horsepower.
 
-1. Linear Regression
-2. Decision Tree Regressor
-3. Random Forest Regressor
-4. Support Vector Regression (SVR)
+### 4. Model Development
 
-Each model is evaluated using the same preprocessing approach to ensure a fair comparison.
+Four regression algorithms were evaluated:
 
-### 6. Model Evaluation
+- Linear Regression
+- Decision Tree Regressor
+- Random Forest Regressor
+- Support Vector Regression (SVR)
 
-Ten-fold cross-validation is used to assess model performance.
+Random Forest achieved the strongest baseline cross-validation performance and was selected for further optimisation.
 
-The primary evaluation metric is Root Mean Squared Error (RMSE).
+### 5. Hyperparameter Optimisation
 
-RMSE measures the typical magnitude of prediction errors, with larger errors receiving greater penalties.
+Random Forest hyperparameters were investigated using `GridSearchCV` with 10-fold cross-validation.
 
-A lower RMSE indicates better predictive performance.
+The expanded search evaluated 18 parameter combinations, resulting in 180 model fits.
 
-The standard deviation of cross-validation RMSE scores is also examined to understand the variability of model performance across folds.
+The search investigated:
 
-## Baseline Model Comparison
+| Hyperparameter | Values evaluated |
+|---|---|
+| `n_estimators` | 100, 200 |
+| `max_features` | 0.5, 0.75, 1.0 |
+| `min_samples_leaf` | 1, 2, 4 |
 
-The following results were obtained during the initial ten-fold cross-validation experiment:
+The selected configuration was:
 
-| Model                     | Mean CV RMSE | CV RMSE Standard Deviation |
-| ------------------------- | -----------: | -------------------------: |
-| Random Forest             |   **2.6029** |                     0.5838 |
-| Linear Regression         |       3.0742 |                     0.4849 |
-| Support Vector Regression |       3.0857 |                     0.4864 |
-| Decision Tree             |       3.1141 |                     0.5327 |
+| Hyperparameter | Selected value |
+|---|---:|
+| `n_estimators` | 200 |
+| `max_features` | 1.0 |
+| `min_samples_leaf` | 1 |
+| `random_state` | 42 |
 
-### Initial Findings
+### 6. Cross-Validation Results
 
-The Random Forest Regressor achieved the lowest mean cross-validation RMSE of approximately **2.60 MPG**, making it the strongest-performing baseline model among the four algorithms evaluated.
+The baseline and tuned Random Forest models were compared using 10-fold cross-validation.
 
-Linear Regression and Support Vector Regression produced relatively similar results, while the Decision Tree Regressor recorded the highest mean cross-validation RMSE.
+| Metric | Baseline Random Forest | Tuned Random Forest |
+|---|---:|---:|
+| Mean CV RMSE | 2.602 MPG | 2.591 MPG |
+| Standard deviation | 0.583 | 0.600 |
 
-These findings support selecting Random Forest as the leading candidate for further hyperparameter optimization.
+The tuned model achieved an approximate 0.42% reduction in mean cross-validation RMSE.
 
-*Note: These are baseline cross-validation results, not final test-set performance or confirmed post-tuning results.*
+However, the improvement was marginal and was not consistent across all validation folds. The tuned model also showed slightly higher fold-to-fold variability.
 
-## Hyperparameter Optimization
+Therefore, hyperparameter optimisation produced a small improvement rather than a substantial increase in predictive performance.
 
-Random Forest is selected for further investigation using `GridSearchCV`.
+The tuned Random Forest was retained as the selected model.
 
-The optimization process explores different combinations of:
-
-- Number of trees.
-- Number of features considered at each split.
-- Bootstrap sampling (`bootstrap`).
-
-The objective is to identify a configuration that improves predictive performance while maintaining reasonable generalization.
-
-The final selected configuration should be determined from cross-validation results rather than training-set performance.
+*Note: These are cross-validation results, not final test-set performance.*
 
 ## Technologies and Libraries
 
-The project uses Python and the following libraries:
-
-| Technology       | Purpose                                          |
-| ---------------- | ------------------------------------------------ |
-| Python           | Primary programming language                     |
-| Jupyter Notebook | Interactive development and documentation        |
-| Pandas           | Data manipulation and analysis                   |
-| NumPy            | Numerical computation                            |
-| Matplotlib       | Data visualization                               |
-| Seaborn          | Statistical data visualization                   |
-| Scikit-learn     | Preprocessing, model development, and evaluation |
+- Python
+- NumPy
+- pandas
+- Matplotlib
+- Seaborn
+- Scikit-learn
+- Jupyter Notebook
 
 ## Project Structure
-
-The repository organization is shown below:
 
 ```text
 auto-mpg-prediction/
@@ -170,49 +115,86 @@ auto-mpg-prediction/
 │   └── auto-mpg.data
 │
 ├── notebooks/
-│   └── MPG_remake_professionally_documented.ipynb
+│   └── mpg_pro.ipynb
 │
 ├── README.md
 ├── requirements.txt
 └── .gitignore
 ```
 
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Emhirate/auto-mpg-prediction.git
+cd auto-mpg-prediction
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate it:
+
+**Windows**
+
+```bash
+.venv\Scripts\activate
+```
+
+**macOS/Linux**
+
+```bash
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the notebook
+
+Open the project notebook:
+
+```bash
+jupyter notebook
+```
+
+Navigate to `notebooks/mpg_pro.ipynb` and execute the cells sequentially.
+
+Ensure the dataset is available in the expected `data/` directory.
+
 ## Reproducibility
 
-The project uses fixed random states where applicable to improve reproducibility.
+The project uses a fixed random state (`random_state=42`) for reproducibility in the relevant data-splitting and model-building operations.
 
-The preprocessing and modelling operations are organized into scikit-learn pipelines to ensure consistent transformations during training, cross-validation, hyperparameter optimization, and prediction.
+Preprocessing is incorporated into machine learning pipelines to ensure that transformations are fitted within the training folds during cross-validation.
 
 ## Limitations
 
-Some limitations of the project include:
-
-- The dataset is relatively small compared with modern automotive datasets.
-- The dataset represents older vehicle models and may not reflect the characteristics of contemporary automobiles.
-- Model performance depends on the quality and representativeness of the available features.
-- Cross-validation performance does not guarantee identical performance on entirely new datasets.
+- The dataset contains only 398 observations.
+- The dataset represents older vehicle models and may not reflect the characteristics of modern vehicles.
+- The improvement from hyperparameter optimisation was marginal.
+- Cross-validation performance should not be interpreted as a guarantee of performance on unseen data.
 
 ## Future Improvements
 
-Potential extensions include:
-
-- Exploring additional regression algorithms.
-- Investigating alternative feature-engineering strategies.
-- Comparing different hyperparameter optimization approaches.
-- Analyzing feature importance and model interpretability.
-- Evaluating the final selected model on the untouched test set.
-- Investigating model performance across different vehicle categories.
+- Add model evaluation visualisations.
+- Examine actual versus predicted MPG values and residuals.
+- Improve model interpretation and feature-importance analysis.
+- Explore additional regression algorithms where justified.
 
 ## Author
 
-**Idris Azeez**
+**Azeez Idris**
 
-Machine Learning and Data Science Portfolio Project
+GitHub: [@Emhirate](https://github.com/Emhirate)
 
 ---
 
-## Acknowledgements
-
-The Auto MPG dataset is provided by the UCI Machine Learning Repository.
-
-Dataset reference: [Auto MPG – UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/9/auto+mpg)
+*This project was developed as a practical demonstration of an end-to-end machine learning regression workflow.*
