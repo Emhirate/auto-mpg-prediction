@@ -159,6 +159,23 @@ The project uses Python and the following libraries:
 | Seaborn          | Statistical data visualization                   |
 | Scikit-learn     | Preprocessing, model development, and evaluation |
 
+## Project Structure
+
+The repository organization is shown below:
+
+```text
+auto-mpg-prediction/
+│
+├── data/
+│   └── auto-mpg.data
+│
+├── notebooks/
+│   └── MPG_remake_professionally_documented.ipynb
+│
+├── README.md
+├── requirements.txt
+└── .gitignore
+```
 
 ## Reproducibility
 
@@ -188,7 +205,7 @@ Potential extensions include:
 
 ## Author
 
-**Azeez Idris**
+**Idris Azeez**
 
 Machine Learning and Data Science Portfolio Project
 
